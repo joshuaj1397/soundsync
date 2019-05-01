@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
@@ -24,8 +25,6 @@ const redirectURI = "http://localhost:3005/callback"
 
 var (
 	mySigningKey = []byte("ASuperSecretSigningKeyCreatedByTheAliensFromArrival")
-	// State spotify session state, should be unique for each party instance i.e. not static
-	State = "mySuperCoolState"
 	// myClientID spotify client id environment variable
 	myClientID = os.Getenv("SPOTIFY_ID")
 	// mySecretShh spotify client secret environment variable
@@ -91,12 +90,23 @@ type spotArtist struct {
 	ArtistName string `json:"name"`
 }
 
+func generateRandomString(n int) string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}
+
 var GetToken = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(":)")
 })
 
 // CreateParty returns the party code so the host can send it out to others
 var CreateParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received Request: /CreateParty")
 	params := mux.Vars(r)
 
 	phoneNum := params["phoneNum"]
@@ -111,6 +121,7 @@ var CreateParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 })
 
 var JoinParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received Request: /JoinParty")
 	params := mux.Vars(r)
 	partyCode := params["partyCode"]
 	nickname := params["nickname"]
@@ -119,7 +130,7 @@ var JoinParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	json.NewEncoder(w).Encode("Party joined")
+	json.NewEncoder(w).Encode("Party Joined")
 })
 
 var Callbackauth0 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -223,32 +234,14 @@ func LinkSpotify(w http.ResponseWriter, r *http.Request) {
 	parameters.Add("client_id", myClientID)
 	parameters.Add("response_type", "code")
 	parameters.Add("redirect_uri", redirectURI)
-	parameters.Add("state", State)
+	parameters.Add("state", generateRandomString(16))
 	parameters.Add("scope", scopes)
 	URL.RawQuery = parameters.Encode()
 
 	fmt.Println("Visit this to log into spotify:")
 	fmt.Println(URL.String())
 
-	// get html for user to sign in to
-	resp, err := http.Get(URL.String())
-	if err != nil {
-		panic(err)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	log.Println()
-	log.Println()
-	// IMPORTANT
-	// display this to the user.  it is where they will sign in to spotify
-	// this is just html, we could just inject this into the frontend
-	log.Println(string(body))
-	log.Println()
-	log.Println()
+	http.Redirect(w, r, URL.String(), http.StatusSeeOther)
 }
 
 // SpotifyCallback Redirected here after authorization to receive authCode
@@ -513,6 +506,8 @@ func SearchSpotify(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("\t:Is Explicit: %s\n", strconv.FormatBool(sTracks.Tracks.Items[0].Explicit))
 	fmt.Printf("\t:Artist Name: %s\n", sTracks.Tracks.Items[0].Artists[0].ArtistName)
 	fmt.Printf("\t:Artist ID: %s\n", sTracks.Tracks.Items[0].Artists[0].ArtistID)
+
+	json.NewEncoder(w).Encode(sTracks)
 }
 
 // AddSong adds a song to the queue ((playlist))

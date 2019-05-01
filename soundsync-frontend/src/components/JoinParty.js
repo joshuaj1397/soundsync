@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Route } from 'react-router-dom'
+import { Route, withRouter } from 'react-router-dom'
 import Party from './Party'
 import Grid from '@material-ui/core/Grid'
 import SoundSyncButton from 'components/Button'
@@ -8,6 +8,7 @@ import SoundSyncInput from 'components/Input'
 import AppContainer from 'components/AppContainer'
 import { withStyles } from '@material-ui/core/styles'
 import Logo from 'components/Logo'
+import auth0Client from '../auth/Auth.js'
 
 const styles = (theme) => {
   return {
@@ -41,7 +42,6 @@ function JoinParty({ classes }) {
   // TODO: Check to see if they have a valid jwt token first (means they are logged in)
   const handleJoinParty = (e) => {
     e.preventDefault()
-    console.log('Joined Party!')
   }
 
   return (
@@ -58,7 +58,7 @@ function JoinParty({ classes }) {
           </SoundSyncNavLink>
         </SoundSyncButton>
       </Grid>
-      <Logo className={classes.Logo}/>
+      <Logo className={classes.Logo} />
       <Grid className={classes.Input} item xs={12}>
         <SoundSyncInput
           id='partyCode'
@@ -72,7 +72,13 @@ function JoinParty({ classes }) {
           value={values.nickName}
           onChange={handleChange('nickName')}
         />
-        <Route path='/Party' component={Party} />
+        <SoundSyncInput
+          id='phoneNum'
+          placeholder='Phone Number'
+          value={values.phoneNum}
+          onChange={handleChange('phoneNum')}
+        />
+        <Route path='/Party/4DR2' component={Party} />
         <SoundSyncButton
           variant='contained'
           color='secondary'
@@ -82,7 +88,7 @@ function JoinParty({ classes }) {
         >
           <SoundSyncNavLink
             color='inherit'
-            to='/Party'
+            to='/Party/4DR2'
             className={classes.ButtonField}
           >
             Join Party
@@ -93,4 +99,4 @@ function JoinParty({ classes }) {
   )
 }
 
-export default withStyles(styles)(JoinParty)
+export default withRouter(withStyles(styles)(JoinParty))

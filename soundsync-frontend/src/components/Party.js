@@ -1,4 +1,8 @@
 import React, { useState } from 'react'
+
+import SoundSyncButton from 'components/Button'
+import SoundSyncNavLink from 'components/NavLink'
+
 import Logo from '../assets/logo.png'
 import MusicControl from './MusicControl'
 import {
@@ -9,24 +13,21 @@ import {
   AppBar,
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
+import NotificationsIcon from '@material-ui/icons/Notifications'
 import { withStyles } from '@material-ui/core/styles'
-import Playlist from './Playlist';
+import Playlist from './Playlist'
+import Search from './Search'
 
 const styles = (theme) => {
   return {
     root: {
       flexGrow: 1,
       Typography: {
-        fontFamily: [
-        'Trebuchet MS',
-        '"Helvetica"',
-        'Arial',
-        'sans-serif',
-        ]
+        fontFamily: ['Trebuchet MS', '"Helvetica"', 'Arial', 'sans-serif'],
       },
       button: {
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-      }
+        backgroundColor: 'rgba(255, 255, 255)',
+      },
     },
     grow: {
       flexGrow: 1,
@@ -52,28 +53,29 @@ const styles = (theme) => {
     logo: {
       alignSelf: 'flex-start',
       width: 20,
-      paddingRight: 6
+      paddingRight: 6,
     },
     code: {
       alignSelf: 'flex-end',
     },
     appBar: {
       top: 0,
-      opacity: 0.5
+      opacity: 0.5,
     },
     musicControl: {
       bottom: 0,
       position: 'fixed',
     },
     AppBar: {
-      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+      backgroundColor: 'rgba(255, 255, 255)',
       color: 'black',
       position: 'static',
-    } 
+      fontFamily: 'Roboto',
+    },
   }
 }
 
-function Party({ classes }) {
+function Party({ classes }, props) {
   const [values, setValues] = useState({
     isSpotifyLinked: false,
   })
@@ -89,48 +91,60 @@ function Party({ classes }) {
 
   return (
     <div className={classes.root}>
-      <AppBar className={classes.AppBar}>
+      <AppBar className={classes.AppBar} backgroundColor='#F2F3F5'>
         <Toolbar>
-          <Typography
-            className={classes.grow}
-            variant='h6'
-            color='inherit'
-            noWrap
-          >
-          <img className={classes.logo} src={Logo}/>
-          soundsync
+          <Typography variant='h6' align='left'>
+            Home
           </Typography>
           <Typography
             className={classes.grow}
-            align='right'
+            variant='h6'
+            color='#262626'
+            align='center'
             noWrap
           >
-            code: 4DR2
+            <img className={classes.logo} src={Logo} />
+            soundsync
+          </Typography>
+          <Typography className={classes.grow} align='right' noWrap>
+            <b>CODE: 4DR2</b>
           </Typography>
         </Toolbar>
       </AppBar>
       <AppBar className={classes.AppBar}>
         <Toolbar>
           <IconButton>
-            <MenuIcon />
+            <NotificationsIcon />
           </IconButton>
           <Typography
             className={classes.grow}
             variant='h6'
             color='inherit'
             noWrap
+            align='center'
           >
             queue
           </Typography>
-          <Button
+          <SoundSyncButton
             variant='contained'
-            color='primary'
+            color='secondary'
+            type='submit'
+            className={classes.textField}
             onClick={handleLinkSpotify}
           >
-            Link Spotify
-          </Button>
+            <SoundSyncNavLink
+              color='inherit'
+              to='/Party'
+              className={classes.ButtonField}
+            >
+              LINK SPOTIFY
+            </SoundSyncNavLink>
+          </SoundSyncButton>
         </Toolbar>
       </AppBar>
+      {/* <AppBar>
+        <Search />
+      </AppBar> */}
       <Playlist />
       <MusicControl className={classes.musicControl} />
     </div>

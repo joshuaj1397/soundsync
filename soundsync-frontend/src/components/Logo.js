@@ -22,7 +22,7 @@ const styles = (theme) => ({
         '"Segoe UI Emoji"',
         '"Segoe UI Symbol"',
       ].join(','),
-    }
+    },
   },
   ImageContainer: {
     display: 'flex',
