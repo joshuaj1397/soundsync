@@ -19,7 +19,7 @@ const styles = (theme) => ({
   },
 })
 
-function Input({ id, classes, value, onChange, placeholder }) {
+function Input({ id, classes, value, onChange, placeholder, onKeyPress }) {
   return (
     <input
       placeholder={placeholder}
@@ -27,6 +27,7 @@ function Input({ id, classes, value, onChange, placeholder }) {
       className={classes.textField}
       value={value}
       onChange={onChange}
+      onKeyPress={onKeyPress}
     />
   )
 }

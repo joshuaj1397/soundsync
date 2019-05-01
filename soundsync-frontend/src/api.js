@@ -55,7 +55,13 @@ const SoundSyncAPI = {
   },
 
   LinkSpotify: function() {
-    fetch(baseUrl + '/LinkSpotify').then((res) => {
+    fetch(baseUrl + '/LinkSpotify', {
+      method: 'GET',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => {
       return res
     })
   },
@@ -91,9 +97,23 @@ const SoundSyncAPI = {
   },
 
   SearchSpotify: function(query) {
-    fetch(baseUrl + '/SearchSpotfy/' + query).then((res) => {
-      return null
-    }) // Do something with the result
+    fetch(baseUrl + '/SearchSpotify/' + query, {
+      method: 'GET',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          return result
+        },
+        (error) => {
+          console.log(error)
+          return error
+        },
+      )
   },
 
   AddSong: function(songURI) {

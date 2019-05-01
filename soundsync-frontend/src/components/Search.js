@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import SoundSyncInputSearch from 'components/InputSearch'
 import Grid from '@material-ui/core/Grid'
+import soundsyncApi from '../api'
 
 const styles = (theme) => {
   return {
@@ -57,49 +58,53 @@ function Search({ classes }) {
     // Request URL:  soundsync.xyz/SearchSpotify/{searchText}
     // searches by song title
     // response from api will be searchResults Type above
+    var result = soundsyncApi.SearchSpotify(values.searchText)
+    console.log('search result')
+    console.log(result)
+    values.searchResults = result
     // mocked results
-    values.searchResults = {
-      Tracks: {
-        Items: [
-          {
-            TrackName: 'olaf',
-            Artists: [
-              {
-                ArtistID: '123',
-                ArtistName: 'Elsa',
-              },
-            ],
-            Explicit: true,
-            TrackID: '321',
-            TrackURI: 'spotURIbaby',
-          },
-          {
-            TrackName: 'sven',
-            Artists: [
-              {
-                ArtistID: '456',
-                ArtistName: 'Ana',
-              },
-            ],
-            Explicit: true,
-            TrackID: '654',
-            TrackURI: 'spotURIbaby',
-          },
-          {
-            TrackName: 'squirt',
-            Artists: [
-              {
-                ArtistID: '789',
-                ArtistName: 'sledge',
-              },
-            ],
-            Explicit: true,
-            TrackID: '987',
-            TrackURI: 'spotURIbaby',
-          },
-        ],
-      },
-    }
+    // values.searchResults = {
+    //   Tracks: {
+    //     Items: [
+    //       {
+    //         TrackName: 'olaf',
+    //         Artists: [
+    //           {
+    //             ArtistID: '123',
+    //             ArtistName: 'Elsa',
+    //           },
+    //         ],
+    //         Explicit: true,
+    //         TrackID: '321',
+    //         TrackURI: 'spotURIbaby',
+    //       },
+    //       {
+    //         TrackName: 'sven',
+    //         Artists: [
+    //           {
+    //             ArtistID: '456',
+    //             ArtistName: 'Ana',
+    //           },
+    //         ],
+    //         Explicit: true,
+    //         TrackID: '654',
+    //         TrackURI: 'spotURIbaby',
+    //       },
+    //       {
+    //         TrackName: 'squirt',
+    //         Artists: [
+    //           {
+    //             ArtistID: '789',
+    //             ArtistName: 'sledge',
+    //           },
+    //         ],
+    //         Explicit: true,
+    //         TrackID: '987',
+    //         TrackURI: 'spotURIbaby',
+    //       },
+    //     ],
+    //   },
+    // }
 
     console.log('searchResults')
     console.log(values.searchResults)
@@ -117,7 +122,8 @@ function Search({ classes }) {
     </>
   )
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = () => (event) => {
+    console.log('keypress')
     if (event.key == 'Enter') {
       console.log('enter pressed!')
       searchSongs()
@@ -137,7 +143,7 @@ function Search({ classes }) {
           value={values.searchText}
           placeholder='Search'
           onChange={handleChange('searchText')}
-          onKeyPress={handleKeyPress}
+          onKeyPress={handleKeyPress()}
         />
       </Grid>
       {values.searchResults.length > 0 ? (

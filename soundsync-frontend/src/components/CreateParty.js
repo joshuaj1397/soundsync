@@ -7,6 +7,9 @@ import AppContainer from 'components/AppContainer'
 import Logo from 'components/Logo'
 import IntegrationNotistack from './Snackbar'
 import soundsyncApi from '../api'
+import Party from './Party'
+import SoundSyncNavLink from 'components/NavLink'
+import { Route, withRouter } from 'react-router-dom'
 
 const styles = (theme) => {
   return {
@@ -42,21 +45,21 @@ function CreateParty({ classes }) {
   const handleCreateParty = (e) => {
     e.preventDefault()
     console.log('Created a party!')
-    soundsyncApi.CreateParty(
-      values.nickName,
-      values.phoneNumber,
-      values.partyName,
-    )
+    // soundsyncApi.CreateParty(
+    //   values.nickName,
+    //   values.phoneNumber,
+    //   values.partyName,
+    // )
   }
 
   const handleJoinParty = (e) => {
     e.preventDefault()
     console.log('Joining Party')
-    soundsyncApi.JoinParty(
-      values.nickName,
-      values.verifyCode,
-      values.phoneNumber,
-    )
+    // soundsyncApi.JoinParty(
+    //   values.nickName,
+    //   values.verifyCode,
+    //   values.phoneNumber,
+    // )
   }
 
   return (
@@ -99,12 +102,19 @@ function CreateParty({ classes }) {
               />
             </Grid>
             <Grid item sm={6}>
+              <Route path='/Party/4DR2' component={Party} />
               <SoundSyncButton
                 variant='contained'
                 color='secondary'
                 onClick={handleJoinParty}
               >
-                Create Party
+                <SoundSyncNavLink
+                  color='inherit'
+                  to='/Party/4DR2'
+                  className={classes.ButtonField}
+                >
+                  Create Party
+                </SoundSyncNavLink>
               </SoundSyncButton>
             </Grid>
           </>

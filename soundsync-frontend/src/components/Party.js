@@ -17,6 +17,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import { withStyles } from '@material-ui/core/styles'
 import Playlist from './Playlist'
 import Search from './Search'
+import soundsyncApi from '../api'
 
 const styles = (theme) => {
   return {
@@ -90,6 +91,7 @@ function Party({ classes }, props) {
   const handleLinkSpotify = (e) => {
     e.preventDefault()
     console.log('Linking Spotify...')
+    soundsyncApi.LinkSpotify()
   }
 
   return (
@@ -135,13 +137,7 @@ function Party({ classes }, props) {
             className={classes.textField}
             onClick={handleLinkSpotify}
           >
-            <SoundSyncNavLink
-              color='inherit'
-              to='/Party'
-              className={classes.ButtonField}
-            >
-              LINK SPOTIFY
-            </SoundSyncNavLink>
+            LINK SPOTIFY
           </SoundSyncButton>
         </Toolbar>
       </AppBar>
