@@ -1,4 +1,5 @@
 import auth0 from 'auth0-js'
+import Environment from './environmentVariables'
 
 export default class Auth {
   accessToken
@@ -7,8 +8,8 @@ export default class Auth {
   tokenRenewalTimeout
 
   auth0 = new auth0.WebAuth({
-    domain: 'soundsync.auth0.com',
-    clientID: 'jb55aT2S42DdGusFvx5tB6rIZGgrZ6fv',
+    domain: Environment.AUTH0_DOMAIN,
+    clientID: Environment.AUTH0_CLIENT_ID,
     redirectUri: 'http://localhost:3000/callback',
     responseType: 'token id_token',
     scope: 'openid',

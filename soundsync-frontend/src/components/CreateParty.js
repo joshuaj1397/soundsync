@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid'
 import AppContainer from 'components/AppContainer'
 import Logo from 'components/Logo'
 import IntegrationNotistack from './Snackbar'
+import soundsyncApi from '../api'
 
 const styles = (theme) => {
   return {
@@ -37,17 +38,25 @@ function CreateParty({ classes }) {
     setValues({ ...values, [name]: event.target.value })
   }
 
-  // TODO: When button is clicked POST data and verify if all fields are valid
-  const handleSendVerify = (e) => {
-    e.preventDefault()
-    setValues({ ...values, isVerifyCodeSent: true })
-    console.log('Verification code sent!')
-  }
-
   // TODO: Make a POST to see if the verification code is correct before creating the party
   const handleCreateParty = (e) => {
     e.preventDefault()
     console.log('Created a party!')
+    soundsyncApi.CreateParty(
+      values.nickName,
+      values.phoneNumber,
+      values.partyName,
+    )
+  }
+
+  const handleJoinParty = (e) => {
+    e.preventDefault()
+    console.log('Joining Party')
+    soundsyncApi.JoinParty(
+      values.nickName,
+      values.verifyCode,
+      values.phoneNumber,
+    )
   }
 
   return (
@@ -71,6 +80,14 @@ function CreateParty({ classes }) {
             onChange={handleChange('phoneNumber')}
           />
         </Grid>
+        <Grid item sm={6}>
+          <SoundSyncInput
+            id='nickName'
+            value={values.nickName}
+            placeholder='Enter Nick Name'
+            onChange={handleChange('nickName')}
+          />
+        </Grid>
         {values.isVerifyCodeSent ? (
           <>
             <Grid item sm={6}>
@@ -85,7 +102,7 @@ function CreateParty({ classes }) {
               <SoundSyncButton
                 variant='contained'
                 color='secondary'
-                onClick={handleCreateParty}
+                onClick={handleJoinParty}
               >
                 Create Party
               </SoundSyncButton>
@@ -97,9 +114,9 @@ function CreateParty({ classes }) {
               variant='contained'
               color='secondary'
               type='submit'
-              onClick={handleSendVerify}
+              onClick={handleCreateParty}
             >
-              Send Verification Code
+              Create Party
             </SoundSyncButton>
           </Grid>
         )}
