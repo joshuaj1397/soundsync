@@ -14,3 +14,4 @@
 **/node_modules/**
 
 package-lock.json
+soundsync-frontend/src/auth/environmentVariables.js

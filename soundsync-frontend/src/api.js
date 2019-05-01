@@ -6,6 +6,7 @@ const SoundSyncAPI = {
       baseUrl + '/CreateParty/' + nickName + '/' + partyName + '/' + phoneNum,
       {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -18,8 +19,8 @@ const SoundSyncAPI = {
           return result
         },
         (error) => {
-          return error
           console.log(error)
+          return error
         },
       )
   },
@@ -29,6 +30,7 @@ const SoundSyncAPI = {
       baseUrl + '/JoinParty/' + nickName + '/' + partyCode + '/' + phoneNum,
       {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
