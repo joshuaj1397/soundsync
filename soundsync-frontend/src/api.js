@@ -1,9 +1,18 @@
 const baseUrl = 'http://localhost:3005'
 
 const SoundSyncAPI = {
-  CreateParty: function(nickName, phoneNum, partyName) {
+  CreateParty: function(nickName, phoneNum, partyName, token) {
+    const authToken = 'Bearer' + token
+
     fetch(
       baseUrl + '/CreateParty/' + nickName + '/' + partyName + '/' + phoneNum,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authToken,
+        },
+      },
     )
       .then((res) => res.json())
       .then(
@@ -17,8 +26,19 @@ const SoundSyncAPI = {
       )
   },
 
-  JoinParty: function(nickName, partyCode, phoneNum) {
-    fetch(baseUrl + '/JoinParty/' + nickName + '/' + partyCode + '/' + phoneNum)
+  JoinParty: function(nickName, partyCode, phoneNum, token) {
+    const authToken = 'Bearer' + token
+
+    fetch(
+      baseUrl + '/JoinParty/' + nickName + '/' + partyCode + '/' + phoneNum,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authToken,
+        },
+      },
+    )
       .then((res) => res.json())
       .then(
         (result) => {

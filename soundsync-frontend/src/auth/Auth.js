@@ -4,6 +4,7 @@ export default class Auth {
   accessToken
   idToken
   expiresAt
+  tokenRenewalTimeout
 
   auth0 = new auth0.WebAuth({
     domain: process.env.AUTH0_DOMAIN,
@@ -27,10 +28,36 @@ export default class Auth {
     this.auth0.authorize()
   }
 
+  getExpiryDate() {
+    return JSON.stringify(new Date(this.expiresAt))
+  }
+
+  scheduleRenewal() {
+    let expiresAt = this.expiresAt
+    const timeout = expiresAt - Date.now()
+    if (timeout > 0) {
+      this.tokenRenewalTimeout = setTimeout(() => {
+        this.renewSession()
+      }, timeout)
+    }
+  }
+
+  renewSession() {
+    this.auth0.checkSession({}, (err, authResult) => {
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        this.setSession(authResult)
+      } else if (err) {
+        this.logout()
+        console.log(err)
+      }
+    })
+  }
+
   handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult)
+        this.scheduleRenewal()
       } else if (err) {
         console.log(err)
         alert(`Error: ${err.error}. Check the console for further details.`)
@@ -69,6 +96,7 @@ export default class Auth {
     this.accessToken = null
     this.idToken = null
     this.expiresAt = 0
+    clearTimeout(this.tokenRenewalTimeout)
 
     // Remove isLoggedIn flag from localStorage
     localStorage.removeItem('isLoggedIn')
