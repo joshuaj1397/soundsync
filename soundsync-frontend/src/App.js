@@ -31,10 +31,6 @@ const handleAuthentication = (nextState, replace) => {
 }
 
 class App extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
   login() {
     this.props.auth.login()
   }
