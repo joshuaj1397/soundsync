@@ -239,26 +239,7 @@ func LinkSpotify(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Visit this to log into spotify:")
 	fmt.Println(URL.String())
 
-	// get html for user to sign in to
-	resp, err := http.Get(URL.String())
-	if err != nil {
-		panic(err)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	log.Println()
-	log.Println()
-	// IMPORTANT
-	// display this to the user.  it is where they will sign in to spotify
-	// this is just html, we could just inject this into the frontend
-	log.Println(string(body))
-	log.Println()
-	log.Println()
-	w.Write(body)
+	http.Redirect(w, r, URL.String(), http.StatusSeeOther)
 }
 
 // SpotifyCallback Redirected here after authorization to receive authCode
