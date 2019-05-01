@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { withStyles } from '@material-ui/core/styles'
+import IntegrationNotistack from './Snackbar'
 
 const styles = (theme) => {
   return {}
@@ -16,7 +17,26 @@ function queueSong(song) {
 
 function Playlist({ classes }, props) {
   const [values, setValues] = useState({
-    songs: { hello: 'world' },
+    songs: {
+      hello: '7 rings',
+      its: 'thank u, next',
+      its1: 'Icy Grl',
+      its2: 'All Mine',
+      its3: 'I Love It',
+      its4: 'Be Careful',
+      its5: 'Caroline',
+      its6: 'Doses & Mimosas',
+    },
+    artists: {
+      a1: 'ariana',
+      a2: 'ariana',
+      a3: 'saweetie',
+      a4: 'kanye',
+      a5: 'kanye',
+      a6: 'cardi b',
+      a7: 'amine',
+      a8: 'cherub',
+    },
   })
 
   const handleChange = (name) => (event) => {
@@ -25,12 +45,18 @@ function Playlist({ classes }, props) {
 
   return (
     <div className='container'>
-      <ul className='list-group text-center'>
+      <ul className='container'>
         {Object.keys(values.songs).map(
           function(key) {
             return (
-              <li className='list-group-item list-group-item-info'>
-                {values.songs[key]}
+              <li className='containerTitle'>
+                <div className='divClassLeft'>
+                  <div>{values.songs[key]}</div>
+                  <div className='divWeightArtist'>{values.songs[key]}</div>
+                </div>
+                <div align='right'>
+                  <IntegrationNotistack />
+                </div>
               </li>
             )
           }.bind(this),

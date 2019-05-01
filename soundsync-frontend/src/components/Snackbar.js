@@ -2,6 +2,8 @@ import React from 'react'
 import Snackbar from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
+import DeleteIcon from '@material-ui/icons/Delete'
+import IconButton from '@material-ui/core/IconButton'
 import PropTypes from 'prop-types'
 import { SnackbarProvider, withSnackbar } from 'notistack'
 import Slide from '@material-ui/core/Slide'
@@ -44,9 +46,9 @@ class App extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.handleClick(TransitionUp)}>
-          Click to add XYZ song.
-        </Button>
+        <IconButton onClick={this.handleClick(TransitionUp)}>
+          <DeleteIcon />
+        </IconButton>
       </React.Fragment>
     )
   }
