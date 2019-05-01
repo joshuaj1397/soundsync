@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import IntegrationNotistack from './Snackbar'
 
 import SoundSyncButton from 'components/Button'
 import SoundSyncNavLink from 'components/NavLink'
@@ -27,7 +26,7 @@ const styles = (theme) => {
         fontFamily: ['Trebuchet MS', '"Helvetica"', 'Arial', 'sans-serif'],
       },
       button: {
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: 'rgba(255, 255, 255)',
       },
     },
     grow: {
@@ -68,9 +67,10 @@ const styles = (theme) => {
       position: 'fixed',
     },
     AppBar: {
-      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+      backgroundColor: 'rgba(255, 255, 255)',
       color: 'black',
       position: 'static',
+      fontFamily: 'Roboto',
     },
   }
 }
@@ -91,7 +91,7 @@ function Party({ classes }, props) {
 
   return (
     <div className={classes.root}>
-      <AppBar className={classes.AppBar}>
+      <AppBar className={classes.AppBar} backgroundColor='#F2F3F5'>
         <Toolbar>
           <Typography variant='h6' align='left'>
             Home
@@ -145,7 +145,6 @@ function Party({ classes }, props) {
       {/* <AppBar>
         <Search />
       </AppBar> */}
-      <IntegrationNotistack />
       <Playlist />
       <MusicControl className={classes.musicControl} />
     </div>
