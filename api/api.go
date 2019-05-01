@@ -24,7 +24,14 @@ import (
 const redirectURI = "http://localhost:3005/callback"
 
 var (
-	mySigningKey = []byte("ASuperSecretSigningKeyCreatedByTheAliensFromArrival")
+	// AUTH0_CLIENT_ID is used for users to auth against the auth0 service
+	auth0ClientID = os.Getenv("AUTH0_CLIENT_ID")
+	// AUTH0_DOMAIN is used for users to auth against the auth0 service
+	auth0Domain = os.Getenv("AUTH0_DOMAIN")
+	// AUTH0_SECRET is used for the server to grant tokens using the auth0 service
+	auth0Secret = os.Getenv("AUTH0_SECRET")
+	// AUTH0_AUD is used for the server to grant different scopes to users based on an audience
+	auth0Aud = os.Getenv("AUTH0_AUD")
 	// myClientID spotify client id environment variable
 	myClientID = os.Getenv("SPOTIFY_ID")
 	// mySecretShh spotify client secret environment variable
@@ -104,42 +111,14 @@ var GetToken = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(":)")
 })
 
-// CreateParty returns the party code so the host can send it out to others
-var CreateParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received Request: /CreateParty")
-	params := mux.Vars(r)
-
-	phoneNum := params["phoneNum"]
-	nickname := params["nickname"]
-	partyName := params["partyName"]
-
-	partyCode, err := model.CreateParty(partyName, phoneNum, nickname)
-	if err != nil {
-		log.Fatal(err)
-	}
-	json.NewEncoder(w).Encode(partyCode)
-})
-
-var JoinParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received Request: /JoinParty")
-	params := mux.Vars(r)
-	partyCode := params["partyCode"]
-	nickname := params["nickname"]
-	phoneNum := params["phoneNum"]
-	err := model.JoinParty(partyCode, nickname, phoneNum)
-	if err != nil {
-		log.Fatal(err)
-	}
-	json.NewEncoder(w).Encode("Party Joined")
-})
-
+// Callbackauth0 handles the callback after a user logs in and returns a token for them to auth with
 var Callbackauth0 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	domain := "soundsync.auth0.com"
+	domain := auth0Domain
 
 	conf := &oauth2.Config{
-		ClientID:     "YOUR_CLIENT_ID",
-		ClientSecret: "YOUR_CLIENT_SECRET",
+		ClientID:     auth0ClientID,
+		ClientSecret: auth0Secret,
 		RedirectURL:  "http://localhost:3005/callbackauth0",
 		Scopes:       []string{"openid", "profile"},
 		Endpoint: oauth2.Endpoint{
@@ -149,7 +128,6 @@ var Callbackauth0 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request
 	}
 	state := r.URL.Query().Get("state")
 	session, err := app.Store.Get(r, "state")
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -170,7 +148,7 @@ var Callbackauth0 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request
 
 	// Getting now the userInfo
 	client := conf.Client(context.TODO(), token)
-	resp, err := client.Get("https://" + domain)
+	resp, err := client.Get("https://" + domain + "/userinfo")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -200,22 +178,98 @@ var Callbackauth0 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request
 	}
 
 	// Redirect to logged in page
-	http.Redirect(w, r, "/joinparty", http.StatusSeeOther)
-
+	fmt.Println("Logged in!")
+	http.Redirect(w, r, "/user", http.StatusSeeOther)
 })
 
-// func Verify(w http.ResponseWriter, r *http.Request) {
-// 	params := mux.Vars(r)
-// 	phoneNum := params["phoneNum"]
-// 	name := params["name"]
-// 	authCode := params["authCode"]
-// 	status, err := model.Verify(phoneNum, name, authCode)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+// LogoutHandler handles logging out a user then redirects them to the home page on the front end
+var LogoutHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	domain := auth0Domain
 
-// 	json.NewEncoder(w).Encode(status)
-// }
+	var URL *url.URL
+	URL, err := url.Parse("https://" + domain)
+
+	if err != nil {
+		panic(err)
+	}
+
+	URL.Path += "/v2/logout"
+	parameters := url.Values{}
+	parameters.Add("returnTo", "http://localhost:3005")
+	parameters.Add("client_id", auth0ClientID)
+	URL.RawQuery = parameters.Encode()
+
+	http.Redirect(w, r, URL.String(), http.StatusTemporaryRedirect)
+})
+
+// LoginHandler handles login for users
+var LoginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	domain := auth0Domain
+	aud := auth0Aud
+
+	conf := &oauth2.Config{
+		ClientID:     auth0ClientID,
+		ClientSecret: auth0Secret,
+		RedirectURL:  "http://localhost:3005/callbackauth0",
+		Scopes:       []string{"openid", "profile"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://" + domain + "/authorize",
+			TokenURL: "https://" + domain + "/oauth/token",
+		},
+	}
+
+	if aud == "" {
+		aud = "https://" + domain + "/userinfo"
+	}
+
+	state := generateRandomString(32)
+
+	session, err := app.Store.Get(r, "state")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	session.Values["state"] = state
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	audience := oauth2.SetAuthURLParam("audience", aud)
+	url := conf.AuthCodeURL(state, audience)
+
+	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+})
+
+// CreateParty returns the party code so the host can send it out to others
+var CreateParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received Request: /CreateParty")
+	params := mux.Vars(r)
+
+	phoneNum := params["phoneNum"]
+	nickname := params["nickname"]
+	partyName := params["partyName"]
+
+	partyCode, err := model.CreateParty(partyName, phoneNum, nickname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	json.NewEncoder(w).Encode(partyCode)
+})
+
+var JoinParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received Request: /JoinParty")
+	params := mux.Vars(r)
+	partyCode := params["partyCode"]
+	nickname := params["nickname"]
+	phoneNum := params["phoneNum"]
+	err := model.JoinParty(partyCode, nickname, phoneNum)
+	if err != nil {
+		log.Fatal(err)
+	}
+	json.NewEncoder(w).Encode("Party Joined")
+})
 
 // SPOTIFY RELATED ROUTES
 

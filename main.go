@@ -46,7 +46,10 @@ func main() {
 
 	// API
 	router.Handle("/", api.GetToken).Methods("GET")
-	router.Handle("/CreateParty/{nickname}/{partyName}/{phoneNum}", authMiddleware(api.CreateParty)).Methods("POST")
+	router.Handle("/Login", api.LoginHandler).Methods("GET")
+	router.Handle("/Logout", api.LogoutHandler).Methods("GET")
+	router.Handle("/callbackauth0", api.Callbackauth0).Methods("GET")
+	router.Handle("/CreateParty/{nickname}/{partyName}/{phoneNum}", api.CreateParty).Methods("POST")
 	router.Handle("/JoinParty/{nickname}/{partyCode}/{phoneNum}", authMiddleware(api.JoinParty)).Methods("POST")
 	// router.HandleFunc("/Verify/{phoneNum}/{name}/{authCode}", api.Verify).Methods("POST")
 
