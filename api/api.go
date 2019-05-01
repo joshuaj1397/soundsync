@@ -106,6 +106,7 @@ var GetToken = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 // CreateParty returns the party code so the host can send it out to others
 var CreateParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received Request: /CreateParty")
 	params := mux.Vars(r)
 
 	phoneNum := params["phoneNum"]
@@ -120,6 +121,7 @@ var CreateParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 })
 
 var JoinParty = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received Request: /JoinParty")
 	params := mux.Vars(r)
 	partyCode := params["partyCode"]
 	nickname := params["nickname"]
@@ -504,6 +506,8 @@ func SearchSpotify(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("\t:Is Explicit: %s\n", strconv.FormatBool(sTracks.Tracks.Items[0].Explicit))
 	fmt.Printf("\t:Artist Name: %s\n", sTracks.Tracks.Items[0].Artists[0].ArtistName)
 	fmt.Printf("\t:Artist ID: %s\n", sTracks.Tracks.Items[0].Artists[0].ArtistID)
+
+	json.NewEncoder(w).Encode(sTracks)
 }
 
 // AddSong adds a song to the queue ((playlist))
