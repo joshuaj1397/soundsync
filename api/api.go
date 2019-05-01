@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
@@ -24,8 +25,6 @@ const redirectURI = "http://localhost:3005/callback"
 
 var (
 	mySigningKey = []byte("ASuperSecretSigningKeyCreatedByTheAliensFromArrival")
-	// State spotify session state, should be unique for each party instance i.e. not static
-	State = "mySuperCoolState"
 	// myClientID spotify client id environment variable
 	myClientID = os.Getenv("SPOTIFY_ID")
 	// mySecretShh spotify client secret environment variable
@@ -89,6 +88,16 @@ type spotTrack struct {
 type spotArtist struct {
 	ArtistID   string `json:"id"`
 	ArtistName string `json:"name"`
+}
+
+func generateRandomString(n int) string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
 }
 
 var GetToken = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -223,7 +232,7 @@ func LinkSpotify(w http.ResponseWriter, r *http.Request) {
 	parameters.Add("client_id", myClientID)
 	parameters.Add("response_type", "code")
 	parameters.Add("redirect_uri", redirectURI)
-	parameters.Add("state", State)
+	parameters.Add("state", generateRandomString(16))
 	parameters.Add("scope", scopes)
 	URL.RawQuery = parameters.Encode()
 
