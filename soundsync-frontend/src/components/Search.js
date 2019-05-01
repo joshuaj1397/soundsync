@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import SoundSyncInput from 'components/Input'
+import SoundSyncInputSearch from 'components/InputSearch'
 import Grid from '@material-ui/core/Grid'
 
 const styles = (theme) => {
@@ -132,7 +132,7 @@ function Search({ classes }) {
       alignItems='stretch'
     >
       <Grid item sm={12}>
-        <SoundSyncInput
+        <SoundSyncInputSearch
           id='searchText'
           value={values.searchText}
           placeholder='Search'

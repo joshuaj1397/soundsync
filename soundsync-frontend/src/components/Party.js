@@ -61,6 +61,7 @@ const styles = (theme) => {
     appBar: {
       top: 0,
       opacity: 0.5,
+      color: 'black',
     },
     musicControl: {
       bottom: 0,
@@ -71,6 +72,8 @@ const styles = (theme) => {
       color: 'black',
       position: 'static',
       fontFamily: 'Roboto',
+      boxShadow: 'none',
+      border: '#000000',
     },
   }
 }
@@ -142,9 +145,9 @@ function Party({ classes }, props) {
           </SoundSyncButton>
         </Toolbar>
       </AppBar>
-      {/* <AppBar>
+      <AppBar className={classes.AppBar}>
         <Search />
-      </AppBar> */}
+      </AppBar>
       <Playlist />
       <MusicControl className={classes.musicControl} />
     </div>
