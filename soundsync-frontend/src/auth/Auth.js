@@ -7,8 +7,8 @@ export default class Auth {
   tokenRenewalTimeout
 
   auth0 = new auth0.WebAuth({
-    domain: 'soundsync.auth0.com',
-    clientID: 'jb55aT2S42DdGusFvx5tB6rIZGgrZ6fv',
+    domain: '',
+    clientID: '',
     redirectUri: 'http://localhost:3000/callback',
     responseType: 'token id_token',
     scope: 'openid',

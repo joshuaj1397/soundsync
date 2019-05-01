@@ -1,0 +1,6 @@
+diff a/soundsync-frontend/src/auth/Auth.js b/soundsync-frontend/src/auth/Auth.js	(rejected hunks)
+@@ -10,2 +10,2 @@ export default class Auth {
+-    domain: "soundsync.auth0.com",
+-    clientID: "jb55aT2S42DdGusFvx5tB6rIZGgrZ6fv",
++    domain: 'soundsync.auth0.com',
++    clientID: 'jb55aT2S42DdGusFvx5tB6rIZGgrZ6fv',
